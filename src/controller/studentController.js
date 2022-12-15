@@ -32,7 +32,7 @@ const createStudent = async (req, res) => {
         let userId = req.token.id;
         let finalData = {name, subject, marks, userId}
 
-        let query = {name, subject, userId}
+        let query = {name, subject, userId, isDeleted: false}
         const data = await studentModel.findOne(query)
         
         if(data) {
@@ -131,15 +131,20 @@ const updateStudent = async (req, res) => {
 /////////////////////////// delete stuent record =============================>
 
 const deleteStudent = async (req, res) => {
-    const sId = req.params.studentId;
+    try {
 
-
-    const student = await studentModel.findOneAndUpdate({_id: sId, isDeleted: false},{$set: {isDeleted: true}},{new: true})
-    if(!student) return res.status(204).send({status: true, message :"Record Deleted already"});
-
-    return res.status(200).send({status: true, message :"Record Deleted", data: student})
+        const sId = req.params.studentId;
     
     
+        const student = await studentModel.findOneAndUpdate({_id: sId, isDeleted: false},{$set: {isDeleted: true}},{new: true})
+        if(!student) return res.status(204).send({status: true, message :"Record Deleted already"});
+    
+        return res.status(200).send({status: true, message :"Record Deleted", data: student})
+
+    } catch (error) {
+        return res.status(500).send({status: false, message: error.message})
+    }
+   
 }
 
     
